@@ -116,3 +116,80 @@ object TrainInceptionV1 {
     })
   }
 }
+
+
+object TrainInceptionV2 {
+  Logger.getLogger("org").setLevel(Level.ERROR)
+  Logger.getLogger("akka").setLevel(Level.ERROR)
+  Logger.getLogger("breeze").setLevel(Level.ERROR)
+  Logger.getLogger("com.intel.analytics.bigdl.optim").setLevel(Level.INFO)
+
+  import Options._
+
+  def main(args: Array[String]): Unit = {
+    trainParser.parse(args, new TrainParams()).map(param => {
+      val imageSize = 224
+      val sc = Engine.init(param.nodeNumber, param.coreNumber, param.env == "spark")
+        .map(conf => {
+          conf.setAppName("BigDL Inception v2 Train Example")
+            .set("spark.task.maxFailures", "1")
+          new SparkContext(conf)
+        })
+      val trainSet = ImageNet2012(
+        param.folder + "/train",
+ 	sc,
+        imageSize,
+        param.batchSize,
+        param.nodeNumber,
+        param.coreNumber,
+        param.classNumber,
+        1281167
+      )
+      val valSet = ImageNet2012(
+        param.folder + "/val",
+        sc,
+        imageSize,
+        param.batchSize,
+        param.nodeNumber,
+        param.coreNumber,
+        param.classNumber,
+        50000
+      )
+
+      val model = if (param.modelSnapshot.isDefined) {
+        Module.load[Float](param.modelSnapshot.get)
+      } else {
+        Inception_v2(classNum = param.classNumber)
+      }
+
+      val state = if (param.stateSnapshot.isDefined) {
+        T.load(param.stateSnapshot.get)
+      } else {
+        T(
+          "learningRate" -> param.learningRate,
+          "weightDecay" -> 0.0001,
+          "momentum" -> 0.9,
+          "dampening" -> 0.0,
+          "learningRateSchedule" -> SGD.Step(400, 0.96)
+        )
+      }
+
+      val optimizer = Optimizer(
+        model = model,
+        dataset = trainSet,
+        criterion = new ClassNLLCriterion[Float]()
+      )
+
+      if (param.checkpoint.isDefined) {
+        optimizer.setCheckpoint(param.checkpoint.get, Trigger.everyEpoch)
+      }
+
+      optimizer
+        .setState(state)
+        .setValidation(Trigger.everyEpoch,
+          valSet, Array(new Top1Accuracy[Float], new Top5Accuracy[Float]))
+        .setEndWhen(Trigger.maxEpoch(55))
+        .optimize()
+    })
+  }
+}
