@@ -357,6 +357,7 @@ object Inception_v2 {
     output2.add(ReLU(true).setName("loss2/conv/bn/sc/relu"))
     output2.add(View(128 * 2 * 2).setNumInputDims(3))
     output2.add(Linear(128 * 2 * 2, 1024).setName("loss2/fc"))
+    output2.add(BatchNormalization(1024).setName("loss2/fc/bn"))
     output2.add(ReLU(true).setName("loss2/fc/bn/sc/relu"))
     output2.add(Linear(1024, classNum).setName("loss2/classifier"))
     output2.add(LogSoftMax().setName("loss2/loss"))
