@@ -20,12 +20,12 @@ package com.intel.analytics.bigdl.optim
 import java.nio.file.{Files, Paths}
 
 import com.intel.analytics.bigdl._
-import com.intel.analytics.bigdl.utils.{Engine, T, Table}
+import com.intel.analytics.bigdl.dataset.{DataSet, _}
 import com.intel.analytics.bigdl.tensor.TensorNumericMath.TensorNumeric
-import com.intel.analytics.bigdl.dataset.DataSet
-import com.intel.analytics.bigdl.dataset._
+import com.intel.analytics.bigdl.utils.{Engine, File, T, Table}
 import org.apache.spark.rdd.RDD
 
+import scala.collection.mutable
 import scala.reflect.ClassTag
 // TODO: remove D to be MiniBatch[T]
 abstract class Optimizer[T: ClassTag, D](
@@ -45,10 +45,14 @@ abstract class Optimizer[T: ClassTag, D](
   protected var validationMethods: Option[Array[ValidationMethod[T]]] = None
   protected var validationDataSet: Option[DataSet[MiniBatch[T]]] = None
 
+  // To save the metrics.
+  protected var metricsTrigger: Option[mutable.HashMap[String, Trigger]] = None
+  protected var metricsPath: Option[String] = None
+
   // To achieve better performance, please set dropPercentage as 0.04
   protected var dropPercentage: Double = 0.0
   protected var maxDropPercentage: Double = 0.0
-  protected var comupteThresholdbatchSize: Int = 100
+  protected var computeThresholdbatchSize: Int = 100
   protected var warmupIterationNum: Int = 200
 
   def optimize(): Module[T]
@@ -86,10 +90,68 @@ abstract class Optimizer[T: ClassTag, D](
   }
 
   def setCheckpoint(path: String, trigger: Trigger): this.type = {
-    require(Files.isDirectory(Paths.get(path)), s"$path is not a folder")
+    if (!path.startsWith(File.hdfsPrefix)) {
+      require(Files.isDirectory(Paths.get(path)), s"Optimizer.setCheckpoint: $path is not a folder")
+    }
     this.checkpointPath = Some(path)
     this.checkpointTrigger = Some(trigger)
     this
+  }
+
+  /**
+   * Enable metrics and save to a folder.
+   *
+   * Metrics table should be defined as metricsName -> trigger. We support two kinds of metrics now:
+   * 1. Supported train metrics are learningRate, loss, throughput, parameters.
+   *    Parameters contains weight, bias, gradWeight, gradBias, and some running status(eg.
+   *    runningMean and runningVar in BatchNormalization).
+   * 2. Validation metrics relay on ValidationMethods set in method setValidation().
+   *
+   * Notice: If parameter metrics is empty, we record learningRate, loss and throughput each
+   * iteration. But recording parameters is disabled by default, due to get parameters from
+   * workers is a heavy operation when the model is very big, like AlexNet and Inception.
+   *
+   * Usage, to save learningRate each iteration, and parameters each 20 iteration:
+   *    enableMetrics("./metrics", mutable.HashMap("learningRate" -> Trigger.severalIteration(1),
+   *      "parameters" -> Trigger.severalIteration(20)))
+   *
+   * @param path The Folder to save metrics.
+   * @param metricsTrigger metrics and trigger.
+   * @return
+   */
+  def enableMetrics(
+        path: String,
+        metricsTrigger: mutable.HashMap[String, Trigger] = null): this.type = {
+    this.metricsTrigger = if (null == metricsTrigger) {
+      Some(mutable.HashMap("learningRate" -> Trigger.severalIteration(1),
+        "loss" -> Trigger.severalIteration(1),
+        "throughput" -> Trigger.severalIteration(1)))
+    } else {
+      Some(metricsTrigger)
+    }
+    metricsPath = Some(path)
+    this
+  }
+
+  /**
+   * Add some metrics.
+   * @param metricsTrigger
+   * @return
+   */
+  def addMetricsTrigger(metricsTrigger: mutable.HashMap[String, Trigger]): this.type = {
+    require(!metricsPath.isEmpty, "Optimizer.addMetrics: should enableMetrics first!")
+    metricsTrigger.foreach{ v =>
+      this.metricsTrigger.get(v._1) = v._2
+    }
+    this
+  }
+
+  /**
+   * Get the metrics trigger.
+   * @return
+   */
+  def getMetricsTrigger(): mutable.HashMap[String, Trigger] = {
+    metricsTrigger.get
   }
 
   def overWriteCheckpoint() : this.type = {
@@ -117,7 +179,7 @@ abstract class Optimizer[T: ClassTag, D](
     this.dropPercentage = dropPercentage
     this.maxDropPercentage = maxDropPercentage
     require(dropPercentage >= 0 && dropPercentage <= maxDropPercentage)
-    this.comupteThresholdbatchSize = batchsize
+    this.computeThresholdbatchSize = batchsize
     this.warmupIterationNum = warmupIteration
     this
   }

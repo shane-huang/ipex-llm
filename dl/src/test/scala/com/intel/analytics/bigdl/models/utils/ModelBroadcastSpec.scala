@@ -15,26 +15,23 @@
  * limitations under the License.
  */
 
-package com.intel.analytics.bigdl.models.lenet
+package com.intel.analytics.bigdl.models.utils
 
-import com.intel.analytics.bigdl._
-import com.intel.analytics.bigdl.numeric.NumericFloat
-import com.intel.analytics.bigdl.nn._
+import com.intel.analytics.bigdl.models.lenet.LeNet5
+import org.apache.log4j.{Level, Logger}
+import org.apache.spark.SparkContext
+import org.scalatest.{FlatSpec, Matchers}
 
-object LeNet5 {
-  def apply(classNum: Int): Module[Float] = {
-    val model = Sequential()
-    model.add(Reshape(Array(1, 28, 28)))
-      .add(SpatialConvolution(1, 6, 5, 5))
-      .add(Tanh())
-      .add(SpatialMaxPooling(2, 2, 2, 2))
-      .add(Tanh())
-      .add(SpatialConvolution(6, 12, 5, 5))
-      .add(SpatialMaxPooling(2, 2, 2, 2))
-      .add(Reshape(Array(12 * 4 * 4)))
-      .add(Linear(12 * 4 * 4, 100))
-      .add(Tanh())
-      .add(Linear(100, classNum))
-      .add(LogSoftMax())
-  }
+class ModelBroadcastSpec extends FlatSpec with Matchers {
+
+  Logger.getLogger("org").setLevel(Level.WARN)
+  Logger.getLogger("akka").setLevel(Level.WARN)
+
+  val sc = new SparkContext("local[1]", "ModelBroadcast")
+  val model = LeNet5(10)
+
+  val modelBroadCast = ModelBroadcast[Float].broadcast(sc, model)
+  modelBroadCast.value().toString should be(model.toString)
+  modelBroadCast.value().parameters()._1 should be(model.parameters()._1)
+  sc.stop()
 }
