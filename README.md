@@ -55,8 +55,8 @@ flowchart TD;
     Feature3-- "Distributed Big Data + AI (TF/PT)" --->ReferOrca([<em><strong>Orca</strong></em>]);
     Feature3-- DL for Spark MLlib --->ReferDLlib2([<em><strong>DLlib</strong></em>]);
     Feature3-- High Level App Framework -->Feature4[Domain?];
-    Feature4-->ReferChronos([<em><strong>Chronos</strong></em>]);
-    Feature4-->ReferFriesian([<em><strong>Friesian</strong></em>]);
+    Feature4-- Time Series -->ReferChronos([<em><strong>Chronos</strong></em>]);
+    Feature4-- Recommendation System -->ReferFriesian([<em><strong>Friesian</strong></em>]);
     
     click ReferNano "https://bigdl.readthedocs.io/en/latest/doc/Nano/Overview/nano.html" "Refer to Nano" _parent
     click ReferOrca "https://bigdl.readthedocs.io/en/latest/doc/Orca/Overview/orca.html"
@@ -85,8 +85,8 @@ flowchart TD;
     Feature3-- "Distributed Big Data + AI (TF/PT)" -->ReferOrca([<em><strong>Orca</strong></em>]);
     Feature3-- DL for Spark MLlib -->ReferDLlib2([<em><strong>DLlib</strong></em>]);
     Feature3-- High Level App Framework -->Feature4[Domain?];
-    Feature4-->ReferChronos([<em><strong>Chronos</strong></em>]);
-    Feature4-->ReferFriesian([<em><strong>Friesian</strong></em>]);
+    Feature4-- Time Series -->ReferChronos([<em><strong>Chronos</strong></em>]);
+    Feature4-- Recommendation System -->ReferFriesian([<em><strong>Friesian</strong></em>]);
     
     click ReferNano "https://bigdl.readthedocs.io/en/latest/doc/Nano/Overview/nano.html" "Refer to Nano" _parent
     click ReferOrca "https://bigdl.readthedocs.io/en/latest/doc/Orca/Overview/orca.html"
