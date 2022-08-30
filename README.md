@@ -46,38 +46,59 @@ For Building Fast, Scalable, and Secured AI
 
 ```mermaid
 flowchart TD;
-    Feature1[Develop AI from scratch?];
-    Feature1-- No, I want to improve -->Feature2[Single-node or Cluster?];
-    Feature1-- No, I want to protect -->ReferPPML([<em><strong>PPML</strong></em>]);
-    Feature1-- Yes --> Feature3[General or Domain-specific application?];
-    Feature2-- single node --->ReferNano([<em><strong>Nano</strong></em>]);
-    Feature2-- cluster -->Feature5[Which part to distribute?];
-    Feature5-- data processing -->ReferOrcaData([<em><strong>Orca:Data </strong></em>]);
-    Feature5-- training & inference -->ReferOrcaLearn([<em><strong>Orca:Learn </strong></em>]);
-    Feature5-- tuning -->ReferOrcaAutoml([<em><strong>Orca:AutoML </strong></em>]);
-    Feature3-- general -->ReferDLlib([<em><strong>DLlib</strong></em>]);
-    Feature3-- domain-specific -->Feature4[Which domain?];
-    Feature4-- time series -->ReferChronos([<em><strong>Chronos</strong></em>]);
-    Feature4-- recommendation system -->ReferFriesian([<em><strong>Friesian</strong></em>]);
-    Feature4-- others -->ReferContact([<em><strong>Contact Us &#x2709  </strong></em>]);
-
+    Feature1[Security?];
+    Feature1-- No ---->Feature2[Python vs. Scala/Java];
+    Feature1-- "Yes (HW Security & FL)"  ------->ReferPPML([<em><strong>PPML</strong></em>]);
+    Feature2-- Python -->Feature3[Application Senario?];
+    Feature2-- Scala/Java ---->ReferDLlib([<em><strong>DLlib</strong></em>]);
+    Feature3-- Accelerated TensorFlow / PyTorch --->ReferNano([<em><strong>Nano</strong></em>]);
+    Feature3-- "Distributed Big Data + AI (TF/PT)" --->ReferOrca([<em><strong>Orca</strong></em>]);
+    Feature3-- DL for Spark MLlib --->ReferDLlib2([<em><strong>DLlib</strong></em>]);
+    Feature3-- High Level App Framework -->Feature4[Domain?];
+    Feature4-->ReferChronos([<em><strong>Chronos</strong></em>]);
+    Feature4-->ReferFriesian([<em><strong>Friesian</strong></em>]);
     
     click ReferNano "https://bigdl.readthedocs.io/en/latest/doc/Nano/Overview/nano.html" "Refer to Nano" _parent
-    click ReferOrcaData "https://bigdl.readthedocs.io/en/latest/doc/Orca/Overview/data-parallel-processing.html"
-    click ReferOrcaLearn "https://bigdl.readthedocs.io/en/latest/doc/Orca/Overview/distributed-training-inference.html"
-    click ReferOrcaAutoml "https://bigdl.readthedocs.io/en/latest/doc/Orca/Overview/distributed-tuning.html"
+    click ReferOrca "https://bigdl.readthedocs.io/en/latest/doc/Orca/Overview/orca.html"
     click ReferDLlib "https://bigdl.readthedocs.io/en/latest/doc/DLlib/Overview/dllib.html"
-    click ReferRayOnSpark "https://bigdl.readthedocs.io/en/latest/doc/Ray/Overview/ray.html"
+    click ReferDLlib2 "https://bigdl.readthedocs.io/en/latest/doc/DLlib/Overview/dllib.html"
     click ReferChronos "https://bigdl.readthedocs.io/en/latest/doc/Chronos/Overview/chronos.html"
     click ReferFriesian "https://bigdl.readthedocs.io/en/latest/doc/Chronos/Overview/chronos.html"
     click ReferPPML "https://bigdl.readthedocs.io/en/latest/doc/PPML/Overview/ppml.html"
-    click ReferContact "mailto:jason.dai@intel.com"
     
     classDef ReferStyle1 fill:#f96;
     classDef ReferStyle2 fill:#FF1;
     classDef Feature fill:#FFF,stroke:#0f29ba,stroke-width:1px;
-    class ReferNano,ReferOrcaLearn,ReferOrcaData,ReferOrcaAutoml,ReferDLlib,ReferRayOnSpark,ReferChronos,ReferFriesian,ReferPPML ReferStyle1;
-    class ReferContact, ReferStyle2
+    class ReferNano,ReferOrca,ReferDLlib,ReferDLlib2,ReferChronos,ReferFriesian,ReferPPML ReferStyle1;
+    class Feature1,Feature2,Feature3,Feature4,Feature5,Feature6,Feature7 Feature;
+    
+```
+
+```mermaid
+flowchart TD;
+    Feature1[Security?];
+    Feature1-- No -->Feature2[Python vs. Scala/Java];
+    Feature1-- "Yes (HW Security & FL)"  -->ReferPPML([<em><strong>PPML</strong></em>]);
+    Feature2-- Python -->Feature3[Application Senario?];
+    Feature2-- Scala/Java -->ReferDLlib([<em><strong>DLlib</strong></em>]);
+    Feature3-- Accelerated TensorFlow / PyTorch -->ReferNano([<em><strong>Nano</strong></em>]);
+    Feature3-- "Distributed Big Data + AI (TF/PT)" -->ReferOrca([<em><strong>Orca</strong></em>]);
+    Feature3-- DL for Spark MLlib -->ReferDLlib2([<em><strong>DLlib</strong></em>]);
+    Feature3-- High Level App Framework -->Feature4[Domain?];
+    Feature4-->ReferChronos([<em><strong>Chronos</strong></em>]);
+    Feature4-->ReferFriesian([<em><strong>Friesian</strong></em>]);
+    
+    click ReferNano "https://bigdl.readthedocs.io/en/latest/doc/Nano/Overview/nano.html" "Refer to Nano" _parent
+    click ReferOrca "https://bigdl.readthedocs.io/en/latest/doc/Orca/Overview/orca.html"
+    click ReferDLlib "https://bigdl.readthedocs.io/en/latest/doc/DLlib/Overview/dllib.html"
+    click ReferDLlib2 "https://bigdl.readthedocs.io/en/latest/doc/DLlib/Overview/dllib.html"
+    click ReferChronos "https://bigdl.readthedocs.io/en/latest/doc/Chronos/Overview/chronos.html"
+    click ReferFriesian "https://bigdl.readthedocs.io/en/latest/doc/Chronos/Overview/chronos.html"
+    click ReferPPML "https://bigdl.readthedocs.io/en/latest/doc/PPML/Overview/ppml.html"
+    
+    classDef ReferStyle1 fill:#f96;
+    classDef Feature fill:#FFF,stroke:#0f29ba,stroke-width:1px;
+    class ReferNano,ReferOrca,ReferDLlib,ReferDLlib2,ReferChronos,ReferFriesian,ReferPPML ReferStyle1;
     class Feature1,Feature2,Feature3,Feature4,Feature5,Feature6,Feature7 Feature;
     
 ```
