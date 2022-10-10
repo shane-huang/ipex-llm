@@ -1,4 +1,5 @@
-# Chronos Documentation
+# BigDL-Chronos
+
 
 _**BigDL-Chronos**_ (_**Chronos**_ for short) is an application framework for building a fast, accurate and scalable time series analysis application.
 
@@ -61,18 +62,19 @@ You can use _**Chronos**_ for:
     .. grid-item-card::
         :class-footer: sd-bg-light
 
-        **Quick Tour**
+        **Get Started**
         ^^^
 
         You may understand the basic usage of Chronos' components and learn to write the first runnable application in this quick tour page.
 
         +++
-        `Quick Tour <./quick-tour.html>`_
+        `Chronos in 5 minutes <./quick-tour.html>`_ /
+        `Installation <./install.html>`_
 
     .. grid-item-card::
         :class-footer: sd-bg-light
 
-        **User Guides**
+        **Key Features Guide**
         ^^^
 
         Our user guides provide you with in-depth information, concepts and knowledges about Chronos.
@@ -90,7 +92,7 @@ You can use _**Chronos**_ for:
     .. grid-item-card::
         :class-footer: sd-bg-light
 
-        **How-to-Guide** / **Example**
+        **How-to-Guide** / **Tutorials**
         ^^^
 
         If you are meeting with some specific problems during the usage, how-to guides are good place to be checked.
