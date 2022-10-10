@@ -1,5 +1,5 @@
 $(document).ready(function(){
-//    $('.btn.dropdown-toggle.nav-item').text('Libraries'); // change text for dropdown menu in header from More to Libraries
+//  $('.btn.dropdown-toggle.nav-item').text('Libraries'); // change text for dropdown menu in header from More to Libraries
     $('#ethical-ad-placement').css({  //weanken the display effect of ads div
         "transform":"scale(0.3)",   // make it smaller
         "position":"absolute",      // modify its position
