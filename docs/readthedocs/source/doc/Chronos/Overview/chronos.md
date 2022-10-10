@@ -1,9 +1,8 @@
-# Chronos User Guide
+# Chronos Documentation
 
-### **1. Overview**
-_BigDL-Chronos_ (_Chronos_ for short) is an application framework for building a fast, accurate and scalable time series analysis application.
+_**BigDL-Chronos**_ (_**Chronos**_ for short) is an application framework for building a fast, accurate and scalable time series analysis application.
 
-You can use _Chronos_ to:
+You can use _**Chronos**_ for:
 
 ```eval_rst
 .. grid:: 3
@@ -52,7 +51,8 @@ You can use _Chronos_ to:
         Generate similar data as history data.
 ```
 
-### **3. Which document to see?**
+---
+</br>
 
 ```eval_rst
 .. grid:: 2
