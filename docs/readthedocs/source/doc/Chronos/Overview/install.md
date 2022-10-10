@@ -1,7 +1,27 @@
-# Chronos User Guide
+# Chronos Installation
 
 ---
-### **2. Install**
+
+#### **OS and Python version requirement**
+
+```eval_rst
+.. note::
+    **Supported OS**:
+
+     Chronos is thoroughly tested on Ubuntu (16.04/18.04/20.04), and should works fine on CentOS. If you are a Windows user, the most convenient way to use Chronos on a windows laptop might be using WSL2, you may refer to https://docs.microsoft.com/en-us/windows/wsl/setup/environment or just install a ubuntu virtual machine.
+```
+```eval_rst
+.. note::
+    **Supported Python Version**:
+
+     Chronos only supports Python 3.7.2 ~ latest 3.7.x. We are validating more Python versions.
+```
+
+
+#### **Install using Conda**
+
+We recommend using conda to manage the Chronos python environment. For more information about Conda, refer to [here](https://docs.conda.io/en/latest/miniconda.html#).
+Select your preferences in the panel below to find the proper install command. Then run the install command as the example shown below.
 
 ```eval_rst
 .. raw:: html
@@ -84,37 +104,27 @@
 
 </br>
 
-#### **2.1 Pypi**
-When you install `bigdl-chronos` from PyPI. We recommend to install with a conda virtual environment. To install Conda, please refer to [here](https://docs.conda.io/en/latest/miniconda.html#).
+
 ```bash
+# create a conda environment for chronos
 conda create -n my_env python=3.7 setuptools=58.0.4
 conda activate my_env
-# click the installation panel above to find which installation option to use
-pip install --pre --upgrade bigdl-chronos[pytorch]  # or other options you may want to use
+
+# select your preference in above panel to find the proper command to replace the below command
+pip install --pre --upgrade bigdl-chronos[pytorch]
+
+# init bigdl-nano to enable local accelerations
 source bigdl-nano-init  # accelerate the conda env
 ```
 
-#### **2.2 Tensorflow backend**
+
+#### **Tensorflow backend**
 Tensorflow is one of the supported backend of Chronos in nightly release version, while it can not work alone without pytorch in Chronos for now. We will fix it soon. If you want to use tensorflow backend, please
 ```bash
 pip install --pre --upgrade bigdl-nano[tensorflow]
 ```
 **after you install the pytorch backend chronos.**
 
-#### **2.3 OS and Python version requirement**
-
-```eval_rst
-.. note::
-    **Supported OS**:
-
-     Chronos is thoroughly tested on Ubuntu (16.04/18.04/20.04), and should works fine on CentOS. If you are a Windows user, the most convenient way to use Chronos on a windows laptop might be using WSL2, you may refer to https://docs.microsoft.com/en-us/windows/wsl/setup/environment or just install a ubuntu virtual machine.
-```
-```eval_rst
-.. note::
-    **Supported Python Version**:
-
-     Chronos only supports Python 3.7.2 ~ latest 3.7.x. We are validating more Python versions.
-```
 
 ---
 
