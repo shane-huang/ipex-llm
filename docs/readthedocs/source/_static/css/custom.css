@@ -1,3 +1,16 @@
+/* change primary & info color for light mode*/
+html[data-theme="light"] {
+    --pst-color-primary: rgb(1, 113, 195);
+    --pst-color-info: rgb(1, 113, 195);
+}
+
+/* ectra css variables */
+:root {
+    --pst-color-info-tiny-opacity: rgba(1, 113, 195, 0.1);
+    --pst-color-info-low-opacity: rgba(1, 113, 195, 0.25);
+}
+
+
 /* align items in the left part of header to the ground*/
 .bd-header #navbar-start {
     align-items: end;
@@ -10,4 +23,15 @@
     color: var(--pst-color-primary);
     padding: 0.1rem 0.25rem;
     font-size: var(--pst-font-size-milli);
+}
+
+/* for card components */
+.bd-content .sd-card {
+    border: none;
+    border-left: .2rem solid var(--pst-color-info-low-opacity);
+}
+
+.bd-content .sd-card .sd-card-header{
+    background-color: var(--pst-color-info-tiny-opacity);
+    border: none;
 }
