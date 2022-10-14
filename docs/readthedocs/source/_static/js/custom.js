@@ -14,14 +14,12 @@ $(document).ready(function(){
     // })
 
     // manually add the ads to the end of content
-    $(".bd-footer-article").append(
-        "myads\
-        <div\
+    $(".bd-article").append(
+        "<div\
         id='ethical-ad-placement'\
-        class='flat'\
+        class='horizontal'\
         data-ea-publisher='readthedocs'\
-        data-ea-type='readthedocs-sidebar'\
-        data-ea-manual='true'\
+        data-ea-type='image'\
       ></div>"
     )
 })
