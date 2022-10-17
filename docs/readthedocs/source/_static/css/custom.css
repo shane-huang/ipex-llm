@@ -42,18 +42,8 @@ html[data-theme="light"] {
 
 /* for sphinx-design badge components (customized for usage in card footer)*/
 .sd-badge{
-    padding: .35em 0.1em;
+    padding: .35em 0em;
     font-size: 0.9em;
-}
-
-/* limit the width of graphviz object and center it*/
-object.graphviz{
-    max-width: 95%;
-}
-
-.graphviz{
-    display: flex;
-    justify-content: center;
 }
 
 /* for landing page side bar */
