@@ -4,7 +4,7 @@
 LLM-based coding copilots have become indispensable tools for enhancing productivity and code quality. `Continue` stands out as a popular open-source choice among these tools - it works seamlessly with fully local LLM setup and is available as an extension in Visual Studio Code. 
 >For instructions on how to use `Continue` with local LLMs running on Intel GPU platforms, please refer to the [Quickstart Guide](https://ipex-llm.readthedocs.io/en/latest/doc/LLM/Quickstart/continue_quickstart.html).
 
-This blog aims to share my experiences with running `Continue` with several local coding models around size 7B. The models are compared across a variety of coding tasks — from generating new code snippets to explaining algorithms. Hopefully this can help fellow developers choose the right model for their specific needs. 
+This blog aims to share my experiences of running `Continue` with several local coding models around size 7B. The models are compared across a variety of coding tasks — from generating new code snippets to explaining algorithms. Hopefully this can help fellow developers choose the right model for their specific needs. 
 
 
 ## Model Choices
@@ -18,12 +18,16 @@ Finally I selected the following models for evaluation:
 - [starcoder2-7b](https://huggingface.co/bigcode/starcoder2-7b) (transformers == 4.39.3)
 - [codegemma-7b](https://huggingface.co/google/codegemma-7b) (transformers == 4.38.1)
 - [CodeLlama-7b](https://huggingface.co/meta-llama/CodeLlama-7b-hf) (transformers==4.37.2)
-- [CodeQwen1.5-7B-Chat](https://huggingface.co/Qwen/CodeQwen1.5-7B-Chat) (TBD)
+- [CodeQwen1.5-7B-Chat](https://huggingface.co/Qwen/CodeQwen1.5-7B-Chat) (transformers==4.37.2)
 
 
 ## Code Generation Task: Pandas analysis
 
-In this task, I asked `Continue` to generate a Python function that takes a CSV file as input and perform some filtering and aggregation operations using the `pandas` library. **The full prompt is as follows**:
+In this task, I asked the model to generate a Python function that takes a CSV file as input and perform some filtering and aggregation operations using the `pandas` library. 
+
+> For code generation, I used `^I` in a code file and input the full prompt in the popped-up textbox. 
+
+**The full prompt is as follows**:
 
 ```text
 Write a Python function that takes a CSV file as input and performs the following operations using the Pandas library:
@@ -33,7 +37,7 @@ Write a Python function that takes a CSV file as input and performs the followin
 - Returns the mean value.
 ```
 
-I asked each model to generate the code several times. Most of the time, `Magicoder` and `OpenCodeInterpreter` can generate correct code with meaningful comments. `Magicoder`'s code seems to offer more flexbility with more configurable parameters than `OpenCodeInterpreter`, but their results are generally similar. `StarCoder2` can generate correct code but with less comments. `Codegemma` generated random meaningless characters, maybe due to improper template. `codellama` does not work properly either.  
+I asked each model to generate the code several times. Most of the time, `Magicoder`, `OpenCodeInterpreter` and `CodeQWen` can generate correct code with meaningful comments. `StarCoder2` can also generate correct code but with less comments. `Codegemma` generated random meaningless characters, maybe due to improper template. `codellama` does not work properly either.  
 
 
 <details> <summary> <code>Magicoder</code> Detailed Results </summary>
@@ -128,9 +132,32 @@ than. <|im_threshold value ('Age' Then outputs the necessary value. Finally, per
 ```
 </details>
 
+
+<details> <summary> <code>CodeQwen</code>  Detailed Results </summary>
+
+```python
+import pandas as pd
+def compute_mean_salary(csv_file, target_column, threshold, filter_column):
+    # Load the CSV into a DataFrame
+    df = pd.read_csv(csv_file)
+    
+    # Filter the DataFrame
+    filtered_df = df[df[filter_column] > threshold]
+    
+    # Compute the mean of the specified column
+    mean_salary = filtered_df[target_column].mean()
+    
+    return mean_salary
+```
+</details>
+
 ### Test Code Generation Task
 
-In this task, I asked the model to generate code to test an algorithm which finds the prime factors of an integer. The original code is as follows:
+In this task, I asked the model to generate unit test for an algorithm which finds the prime factors of an integer. 
+
+>For unit test generation, I used `^L` to add selected code as context and use `/test` built-in instruction.
+
+The original code is as follows:
 
 ```python
 def find_prime_factors(n):
@@ -147,7 +174,7 @@ def find_prime_factors(n):
     return factors
 ```
 
-`Magicoder` and `OpenCodeInterpreter` generally produce correct test code that covers various scenarios. However, there're occasional formatting or spacing errors that can lead to runtime failure. `CodeGemma`still generates random characters, likely due to an improper template. `CodeLlama` just produces irrelevant content. 
+The results show that, `Magicoder`, `OpenCodeInterpreter` and `CodeQwen` generally produce correct test code that covers various scenarios. However, there're occasional formatting or number errors that can lead to runtime failure. `CodeGemma`still generates random characters, likely due to an improper template. `CodeLlama` just produces irrelevant content. 
 
 <details> <summary> <code>Magicoder</code>  Detailed Results </summary>
 
@@ -343,13 +370,51 @@ if3,help:
 </details> 
 
 
+<details> <summary> <code>CodeQwen</code>  Detailed Results </summary>
 
+```python
+import unittest
+
+class TestFindPrimeFactors(unittest.TestCase):
+
+    def setUp(self):
+        self.input_output_test_data = {
+            1: [],
+            2: [2],
+            3: [3],
+            4: [2, 2],
+            6: [2, 3],
+            8: [2, 2, 2],
+            9: [3, 3],
+            12: [2, 2, 3],
+            28: [2, 2, 7],
+            49: [7, 7]
+        }
+
+    def test_input_output(self):
+        for input_val, expected_output in self.input_output_test_data.items():
+            self.assertEqual(find_prime_factors(input_val), expected_output)
+
+    def test_edge_cases(self):
+        self.assertEqual(find_prime_factors(0), [])
+        self.assertEqual(find_prime_factors(-1), [])
+        self.assertEqual(find_prime_factors(1), [])
+        self.assertEqual(find_prime_factors(13), [13])
+
+    def tearDown(self):
+        pass
+
+if __name__ == '__main__':
+    unittest.main()
+
+```
+</details>
 
 ## Adding Comments
 
-In this task, I asked `Continue` to add comments to a given code snippet. The original code is the same as in the section of [Test Code Generation Task](#test-code-generation-task). 
+In this task, I asked the model to add comments to a given code snippet. The original code is the same as in the section of [Test Code Generation Task](#test-code-generation-task). 
 
-In general, `Magicoder` and `OpenCodeInterpreter` works well, while `StarCoder2`, `CodeGemma` and `CodeLlama` does not generate meaningful comments. 
+The results show that, `Magicoder`, `OpenCodeInterpreter` and `CodeQwen` generally works well, while `StarCoder2`, `CodeGemma` and `CodeLlama` does not generate meaningful comments. 
 
 > `/comment` instruction is expected to insert comment into the original code snippet directly but is not always perform insersion properly. In this case, you can use the chatbox to obtain the commented code and copy/paste it back to the original file.
 
@@ -457,9 +522,45 @@ consumption;
 ```
 </details>
 
+<details> <summary> <code>CodeQWen</code>  Detailed Results </summary>
+
+```python
+# A function is defined to find prime factors of an input number
+def find_prime_factors(n):
+    # Initialize an index variable i to 2
+    i = 2
+    # Create an empty list to hold all the prime factors
+    factors = []
+    
+    # As long as i squared smaller than or equal to n
+    while i * i <= n:
+        # If n is not divisible by i, increment i by 1
+        if n % i:
+            i += 1
+        else:
+            # If n is divisible by i (meaning i is a factor),
+            # then divide n by i and append i to the list of factors
+            n //= i
+            factors.append(i)
+    
+    # If n is greater than 1 after the above process,
+    # append n to the list of factors as it is also a prime factor
+    if n > 1:
+        factors.append(n)
+    
+    # Once all the factors have been found and appended, return the list
+    return factors
+
+```
+</details>
+
 ## Code Explanation
 
-In this task, I asked the model to explain a given code snippet. The original code is as follows:
+In this task, I asked the model to explain a given code snippet, which used less common language features or libraries in Python, e.g. `itertools`. The goal is to check if the explanation is accurate, clear, and detailed enough for someone unfamiliar with the specific Python features or libraries used in the code. 
+
+> For code explanation  I used `^L` to add selected code as context and asked the model to explain the code in chatbox.
+
+The original code is as follows:
 
 ```python
 import itertools
@@ -468,7 +569,7 @@ perms = list(itertools.permutations([1, 2, 3]))
 print(perms)
 ```
 
-As commenting task, `MagicCoder` and `OpenCodeInterpreter` produces meaningful explanations most of the time, while `CodeGemma`, `CodeLlama` and `StarCoder2` does not work well. 
+The results shows that `MagicCoder`, `OpenCodeInterpreter` and `CodeQwen` produces meaningful explanations with proper formatting most of the time, while `CodeGemma`, `CodeLlama` and `StarCoder2` does not work well. 
 
 <details> <summary> <code>MagicCoder</code>  Detailed Results </summary>
 <br/>
@@ -547,5 +648,26 @@ print()
 
 </details>
 
+<details> <summary> <code>CodeQWen</code>  Detailed Results </summary>
+<br/>
 
-In conclusion, using `Magicoder` or `OpenCodeInterpreter` is generally recommended for coding generation, adding comments and code explnation tasks. `StarCoder2` may also be okay for some code generation task but sometimes can produce absolute non-sense. `CodeGemma` and `CodeLlama` may need further tuning on templates.
+```md
+The given code is a Python script that utilizes the `itertools` module to generate all possible permutations of the list `[1, 2, 3]`. Here's the step-by-step explanation:
+
+1. `itertools` is a Python library that provides functions to work with iterators, which are objects that generate their results one at a time.
+
+2. `itertools.permutations()` function takes an iterable and a length (represented as an integer) as input and returns an iterator that produce all possible permutations of the given iterable of length `n`. In this case, the iterable is the list `[1, 2, 3]` and the length is not specified, so it defaults to all permutations (since no second argument is provided).
+
+3. `itertools.permutations([1, 2, 3])` returns an iterator that produces all permutations of the list `[1, 2, 3]`.
+
+4. To convert the iterator to a list, you can use the `list()` function. `list()` takes an iterator and returns a list containing all the items produced by the iterator.
+
+5. Finally, `print(perms)` displays the list of all permutations.
+
+In summary, this Python script generates all the 6 possible permutations of the list `[1, 2, 3]` and prints them out.
+```
+
+</details>
+<br/>
+
+In conclusion, using `Magicoder`, `OpenCodeInterpreter` or `CodeQWen` is generally recommended for coding generation, adding comments and code explanation tasks. `StarCoder2` may also be okay for some code generation task but sometimes can produce absolute non-sense. `CodeGemma` and `CodeLlama` may need further prompt tuning for reasonable results.
